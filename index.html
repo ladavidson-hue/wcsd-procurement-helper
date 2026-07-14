@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WCSD Purchase Pathfinder - Procurement Navigator</title>
+<style>
+  :root{
+    --wcsd-blue:#005288;
+    --wcsd-blue-deep:#003a61;
+    --wcsd-blue-tint:#e8f1f7;
+    --wcsd-gold:#deb408;
+    --wcsd-gold-tint:#fdf6dd;
+    --ink:#1f2a33;
+    --ink-soft:#5a6b78;
+    --line:#d7e0e7;
+    --ok:#2e7d32;
+    --warn:#b3540a;
+    --card-shadow:0 2px 10px rgba(0,42,69,.10);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Segoe UI",Aptos,system-ui,sans-serif;color:var(--ink);background:#f4f7f9;line-height:1.5}
+  a{color:var(--wcsd-blue)}
+
+  header{background:linear-gradient(135deg,var(--wcsd-blue) 0%,var(--wcsd-blue-deep) 100%);color:#fff;border-bottom:5px solid var(--wcsd-gold)}
+  .hd-inner{max-width:1060px;margin:0 auto;padding:18px 24px;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+  .hd-inner img{height:52px;width:auto}
+  .hd-title h1{font-size:1.45rem;font-weight:700;letter-spacing:.2px}
+  .hd-title p{font-size:.9rem;opacity:.85}
+  nav{background:var(--wcsd-blue-deep)}
+  .nav-inner{max-width:1060px;margin:0 auto;padding:0 24px;display:flex;gap:4px;overflow-x:auto}
+  .nav-inner button{background:none;border:none;color:#cfe0ec;font:inherit;font-size:.92rem;font-weight:600;padding:12px 16px;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
+  .nav-inner button.active{color:#fff;border-bottom-color:var(--wcsd-gold)}
+  .nav-inner button:hover{color:#fff}
+
+  main{max-width:1060px;margin:0 auto;padding:28px 24px 60px}
+  .tab{display:none}
+  .tab.active{display:block}
+
+  .hero{background:#fff;border:1px solid var(--line);border-left:6px solid var(--wcsd-gold);border-radius:10px;padding:22px 26px;box-shadow:var(--card-shadow);margin-bottom:24px}
+  .hero h2{color:var(--wcsd-blue);font-size:1.25rem;margin-bottom:6px}
+  .hero p{color:var(--ink-soft);font-size:.97rem}
+
+  .progress{display:flex;align-items:center;gap:8px;margin:0 0 18px;font-size:.85rem;color:var(--ink-soft)}
+  .bar{flex:1;height:8px;background:#e2eaf0;border-radius:4px;overflow:hidden}
+  .bar>div{height:100%;background:linear-gradient(90deg,var(--wcsd-blue),var(--wcsd-gold));width:0%;transition:width .35s}
+
+  .qcard{background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:var(--card-shadow);padding:26px 28px}
+  .qnum{display:inline-block;background:var(--wcsd-gold);color:var(--wcsd-blue-deep);font-weight:800;font-size:.75rem;padding:3px 10px;border-radius:12px;letter-spacing:.6px;text-transform:uppercase;margin-bottom:10px}
+  .qcard h3{color:var(--wcsd-blue);font-size:1.2rem;margin-bottom:4px}
+  .qhelp{color:var(--ink-soft);font-size:.92rem;margin-bottom:18px}
+  .opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+  .opt{background:var(--wcsd-blue-tint);border:2px solid transparent;border-radius:8px;padding:16px;cursor:pointer;text-align:left;font:inherit;transition:all .15s}
+  .opt:hover{border-color:var(--wcsd-blue);background:#fff}
+  .opt .ot{font-weight:700;color:var(--wcsd-blue-deep);display:block;margin-bottom:4px}
+  .opt .od{font-size:.85rem;color:var(--ink-soft)}
+  .backrow{margin-top:18px;display:flex;justify-content:space-between}
+  .ghost{background:none;border:1px solid var(--line);color:var(--ink-soft);padding:8px 16px;border-radius:6px;font:inherit;font-size:.88rem;cursor:pointer}
+  .ghost:hover{border-color:var(--wcsd-blue);color:var(--wcsd-blue)}
+
+  .checks{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+  .checks label{display:flex;gap:10px;align-items:flex-start;background:var(--wcsd-blue-tint);padding:13px 15px;border-radius:8px;cursor:pointer;font-size:.94rem}
+  .checks input{margin-top:3px;accent-color:var(--wcsd-blue);width:17px;height:17px}
+  .primary{background:var(--wcsd-blue);color:#fff;border:none;padding:11px 26px;border-radius:6px;font:inherit;font-weight:700;cursor:pointer}
+  .primary:hover{background:var(--wcsd-blue-deep)}
+
+  .path{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:14px 0 22px}
+  .chip{background:var(--wcsd-blue);color:#fff;font-size:.8rem;font-weight:700;padding:6px 12px;border-radius:15px}
+  .chip.gold{background:var(--wcsd-gold);color:var(--wcsd-blue-deep)}
+  .arrow{color:var(--ink-soft);font-weight:700}
+  .verdict{border-radius:10px;padding:18px 22px;margin-bottom:20px;border:1px solid var(--line);background:var(--wcsd-gold-tint);border-left:6px solid var(--wcsd-gold)}
+  .verdict h4{color:var(--wcsd-blue-deep);font-size:1.05rem;margin-bottom:4px}
+  .verdict p{font-size:.93rem}
+  .cl-section{margin-bottom:22px}
+  .cl-section h5{color:var(--wcsd-blue);font-size:.8rem;text-transform:uppercase;letter-spacing:1px;border-bottom:2px solid var(--wcsd-gold);display:inline-block;padding-bottom:3px;margin-bottom:10px}
+  .cl{list-style:none}
+  .cl li{display:flex;gap:11px;align-items:flex-start;padding:10px 12px;border-radius:7px;font-size:.94rem}
+  .cl li:nth-child(odd){background:#f6f9fb}
+  .cl input{margin-top:3px;accent-color:var(--wcsd-blue);width:17px;height:17px;flex-shrink:0}
+  .form-tag{background:var(--wcsd-blue-tint);color:var(--wcsd-blue-deep);font-weight:700;font-size:.76rem;padding:2px 8px;border-radius:4px;white-space:nowrap;margin-left:6px;text-decoration:none;border:1px solid #bcd3e2;display:inline-block}
+  a.form-tag:hover{background:var(--wcsd-blue);color:#fff}
+  .stopflag{background:#fdecec;border-left:6px solid #b3261e;border-radius:8px;padding:14px 18px;margin:16px 0;font-size:.92rem}
+  .stopflag strong{color:#8f1f18}
+  .noteflag{background:var(--wcsd-blue-tint);border-left:6px solid var(--wcsd-blue);border-radius:8px;padding:14px 18px;margin:16px 0;font-size:.92rem}
+
+  .ref-card{background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:var(--card-shadow);padding:24px 26px;margin-bottom:22px}
+  .ref-card h3{color:var(--wcsd-blue);margin-bottom:4px;font-size:1.1rem}
+  .ref-card .sub{color:var(--ink-soft);font-size:.88rem;margin-bottom:14px}
+  table{width:100%;border-collapse:collapse;font-size:.9rem}
+  th{background:var(--wcsd-blue);color:#fff;text-align:left;padding:9px 12px;font-weight:700}
+  td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  tr:nth-child(even) td{background:#f6f9fb}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+  @media(max-width:760px){.two-col{grid-template-columns:1fr}}
+  .do h4{color:var(--ok);margin-bottom:8px}
+  .dont h4{color:#b3261e;margin-bottom:8px}
+  .do ul,.dont ul{padding-left:20px;font-size:.9rem}
+  .do li,.dont li{margin-bottom:6px}
+
+  /* Informal solicitation page */
+  .steps{counter-reset:step;list-style:none;margin:6px 0 0}
+  .steps li{counter-increment:step;position:relative;padding:14px 16px 14px 62px;border-radius:8px;margin-bottom:10px;background:#f6f9fb;font-size:.94rem}
+  .steps li::before{content:counter(step);position:absolute;left:16px;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:50%;background:var(--wcsd-blue);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center}
+  .steps li strong{color:var(--wcsd-blue-deep)}
+  .dl-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:14px}
+  @media(max-width:700px){.dl-grid{grid-template-columns:1fr}}
+  .dl-card{border:1px solid var(--line);border-top:5px solid var(--wcsd-gold);border-radius:10px;padding:18px 20px;background:#fff;box-shadow:var(--card-shadow)}
+  .badge{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center}
+  .badge svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .badge.blue{background:var(--wcsd-blue)}
+  .badge.gold{background:var(--wcsd-gold)}
+  .badge.green{background:#2e8b57}
+  .icon-inline{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-2px;margin-right:5px}
+  .dl-card h4{color:var(--wcsd-blue);margin:6px 0 4px;font-size:1rem}
+  .dl-card p{font-size:.87rem;color:var(--ink-soft);margin-bottom:12px}
+  .dl-btn{display:inline-block;background:var(--wcsd-blue);color:#fff;text-decoration:none;font-weight:700;font-size:.86rem;padding:9px 18px;border-radius:6px}
+  .dl-btn:hover{background:var(--wcsd-blue-deep)}
+  .dl-card .ft{font-size:.75rem;color:var(--ink-soft);margin-top:8px}
+
+  footer{background:var(--wcsd-blue-deep);color:#bcd3e2;font-size:.8rem;padding:22px 24px;margin-top:40px}
+  .ft-inner{max-width:1060px;margin:0 auto}
+  .mock-banner{background:var(--wcsd-gold);color:var(--wcsd-blue-deep);text-align:center;font-size:.8rem;font-weight:700;padding:6px;letter-spacing:.5px}
+  @media print{header,nav,.mock-banner,footer,.backrow,.noprint{display:none} body{background:#fff} .qcard,.ref-card{box-shadow:none;border:none}}
+</style>
+</head>
+<body>
+
+<div class="mock-banner">DESIGN MOCKUP - content drawn from AM 3325, Procurement of Professional Services training, and Business Management training; verify all requirements with the Purchasing Department before acting</div>
+
+<header>
+  <div class="hd-inner">
+    <img src="brand-assets/logos/wcsd-logo-horizontal-white.png" alt="Washoe County School District">
+    <div class="hd-title">
+      <h1>Purchase Pathfinder</h1>
+      <p>Answer a few questions. Get the right process, the right forms, and a checklist.</p>
+    </div>
+  </div>
+</header>
+
+<nav>
+  <div class="nav-inner">
+    <button class="active" data-tab="navigator" onclick="showTab('navigator')">Start a Purchase</button>
+    <button data-tab="informal" onclick="showTab('informal')">Informal Solicitation</button>
+    <button data-tab="thresholds" onclick="showTab('thresholds')">Dollar Thresholds</button>
+    <button data-tab="pcard" onclick="showTab('pcard')">P-Card Rules</button>
+    <button data-tab="forms" onclick="showTab('forms')">Forms Library</button>
+    <button data-tab="about" onclick="showTab('about')">About</button>
+  </div>
+</nav>
+
+<main>
+
+<!-- ============ NAVIGATOR TAB ============ -->
+<section id="tab-navigator" class="tab active">
+  <div class="hero">
+    <h2>Need to buy something? Start here.</h2>
+    <p>Procurement rules change based on <strong>what</strong> you're buying, <strong>how much</strong> it costs, and <strong>whose money</strong> you're spending. This tool walks you through the decisions so you don't have to memorize AM&nbsp;3325. One rule never changes: <strong>no goods are ordered and no services begin until a fully executed Purchase Order (and signed contract, where required) is in place.</strong></p>
+  </div>
+
+  <div class="progress noprint"><span id="stepLabel">Question 1</span>
+    <div class="bar"><div id="barFill"></div></div>
+  </div>
+
+  <div id="wizard"></div>
+</section>
+
+<!-- ============ INFORMAL SOLICITATION TAB ============ -->
+<section id="tab-informal" class="tab">
+  <div class="hero">
+    <h2>The informal solicitation process, start to finish.</h2>
+    <p>When a purchase is too big to just buy but not big enough for a formal bid, you run an <strong>informal solicitation</strong>: you ask several qualified vendors for proposals, score them fairly with a rubric, and recommend the winner to Purchasing. Your school or department runs it - this page shows you how, with ready-to-use templates.</p>
+  </div>
+
+  <div class="ref-card">
+    <h3>When do I need one?</h3>
+    <p class="sub">Amounts are one-time, single, and/or annual aggregated totals with a vendor. When in doubt, ask Purchasing - and always confirm current thresholds before you send anything.</p>
+    <table>
+      <tr><th>Situation</th><th>What's required</th></tr>
+      <tr><td>Professional services, <strong>$10,000 – $24,999</strong> (non-federal)</td><td>Three quotes should be solicited, unless otherwise directed by Purchasing.</td></tr>
+      <tr><td>Professional services, <strong>$25,000 – $99,999</strong> (non-federal)</td><td>Informal request for a letter proposal/quote - conducted and evaluated by your school/department, with a recommendation of award to Purchasing.</td></tr>
+      <tr><td>Any purchase with <strong>federal funds, $10,000+</strong></td><td>Quotes must be obtained and documented (<a href="https://wcsdpolicy.net/search.php?search=Reg%203329" target="_blank">AR 3329</a> / 2 CFR 200). At $250,000+ this becomes a formal sealed solicitation run by Purchasing.</td></tr>
+      <tr><td>Goods / non-capital purchases, <strong>$5,000 – $50,000</strong></td><td>Informal Quote Request (IFQ) per PUR-340 - quotes may be gathered by your site or by Purchasing.</td></tr>
+    </table>
+    <div class="noteflag">Not needed when: the purchase has an approved sole source (<a href="https://wcsdpolicy.net/pdf_files/forms/AF%203340%20Single-Sole%20Source%20Request_v9_10.20.24.pdf" target="_blank">AF 3340</a>), the FRC has granted a solicitation waiver, or - for federal funds - Purchasing has approved an insufficient-competition finding or the granting agency has issued a waiver.</div>
+  </div>
+
+  <div class="ref-card">
+    <h3>Download the templates</h3>
+    <p class="sub">Two companion documents: the letter you send to vendors, and the workbook your scorers use to pick the winner. Placeholders are marked in [brackets] - replace them all, and delete the instructions box before sending.</p>
+    <div class="dl-grid">
+      <div class="dl-card">
+        <div class="badge blue"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg></div>
+        <h4>Informal Solicitation Letter</h4>
+        <p>A fill-in-the-blank email/letter to vendors: scope of work with activities and deliverables, proposal requirements, published evaluation criteria and weights, contract requirements (ICA, fingerprinting, insurance), and how to respond.</p>
+        <a class="dl-btn" href="templates/WCSD-Informal-Solicitation-Letter-TEMPLATE.docx" download><svg class="icon-inline" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download template (Word)</a>
+        <div class="ft">WCSD-Informal-Solicitation-Letter-TEMPLATE.docx</div>
+      </div>
+      <div class="dl-card">
+        <div class="badge gold"><svg viewBox="0 0 24 24"><line x1="4" y1="20" x2="20" y2="20"/><line x1="7" y1="20" x2="7" y2="12"/><line x1="12" y1="20" x2="12" y2="6"/><line x1="17" y1="20" x2="17" y2="15"/></svg></div>
+        <h4>Proposal Scoring Rubric</h4>
+        <p>A multi-scorer Excel workbook: setup tab, independent tabs for each of three scorers with required written justifications, and an All Scores summary that averages totals automatically - highest average wins.</p>
+        <a class="dl-btn" href="templates/WCSD-Informal-Solicitation-Scoring-Rubric-TEMPLATE.xlsx" download><svg class="icon-inline" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download template (Excel)</a>
+        <div class="ft">WCSD-Informal-Solicitation-Scoring-Rubric-TEMPLATE.xlsx</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ref-card">
+    <h3>The process, step by step</h3>
+    <ol class="steps">
+      <li><strong>Confirm the basics.</strong> Budget exists (or FRC approval is in hand), the funding source is known, and the dollar amount actually calls for an informal solicitation - check the table above or run the <a href="#" onclick="showTab('navigator');return false">Purchase Pathfinder</a>.</li>
+      <li><strong>Write the solicitation letter.</strong> Open the letter template and define the scope of work as numbered activities - every activity names a deliverable and an audience. Set proposal requirements, page limit, and the response deadline.</li>
+      <li><strong>Set the evaluation criteria BEFORE you send.</strong> Fill in Table 1 with criteria that mirror the proposal requirements, with weights totaling 100%. Vendors must know exactly what is being scored - and the rubric weights must match what you publish.</li>
+      <li><strong>Send to at least three qualified vendors.</strong> Email the solicitation and keep a copy of the email and the vendor list. Every vendor gets identical information - that's the law and the deal.</li>
+      <li><strong>Set up the scoring rubric.</strong> Fill in the workbook's setup tab, enter the same criteria and weights, and give each of your (typically three) scorers their own tab. Anyone with a personal or financial relationship to a bidder must recuse.</li>
+      <li><strong>Score independently, then roll up.</strong> Each scorer reviews all proposals alone, scoring only what the proposal says - with a written justification for every score. The All Scores tab averages the totals; the highest average wins.</li>
+      <li><strong>Recommend the award to Purchasing.</strong> Send Purchasing your recommendation with the solicitation letter, all quotes/proposals received, and the completed rubric workbook. For $25,000+, this recommendation-of-award step is required.</li>
+      <li><strong>Contract and requisition.</strong> Complete the ICA (<a href="https://wcsdpolicy.net/pdf_files/forms/AP-F006A%20v19_%207.1.26%20final.pdf" target="_blank">AP-F006A</a> + <a href="https://wcsdpolicy.net/pdf_files/forms/AP-F006B%20v17_final%20(7-1-26).pdf" target="_blank">AP-F006B</a>) or contract review (<a href="https://wcsdpolicy.net/pdf_files/forms/AF%203326%20Contract%20Review%20with%20Money_v15.pdf" target="_blank">AF 3326</a>), then submit the PR in BusinessPlus and attach: the quote-request letter/email, all quotes received, the completed rubric, the ICA/contract, insurance, and W-9. No work begins until the PO and contract are signed.</li>
+      <li><strong>Keep the file.</strong> Retain the solicitation, all responses, and all completed rubrics in the procurement file - solicitation records are kept 7 years (NRS 332.091).</li>
+    </ol>
+  </div>
+
+  <div class="ref-card">
+    <h3>Ground rules that keep you out of trouble</h3>
+    <div class="two-col">
+      <div class="do">
+        <h4>✓ Do</h4>
+        <ul>
+          <li>Publish the criteria and weights in the letter - then score against exactly those</li>
+          <li>Require written justification for every score</li>
+          <li>Give every vendor identical information</li>
+          <li>Verify current thresholds, insurance minimums, and fingerprinting fees before sending</li>
+          <li>Save everything to the procurement file</li>
+        </ul>
+      </div>
+      <div class="dont">
+        <h4>✗ Don't</h4>
+        <ul>
+          <li>Credit a vendor for reputation - score only what the proposal says</li>
+          <li>Score if you have a personal or financial relationship with a bidder</li>
+          <li>Change criteria or weights after proposals arrive</li>
+          <li>Split a purchase to duck under a threshold</li>
+          <li>Let work start before the PO and ICA/contract are fully signed</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ THRESHOLDS TAB ============ -->
+<section id="tab-thresholds" class="tab">
+  <div class="ref-card">
+    <h3>Professional services - non-federal funds</h3>
+    <p class="sub">Amounts are one-time, single, and/or <em>annual aggregated</em> totals with a vendor. Splitting purchases to stay under a threshold is not permitted. Source: Procurement of Professional Services training; <a href="https://wcsdpolicy.net/search.php?search=Reg%203323" target="_blank">AR 3323 Professional Services</a>.</p>
+    <table>
+      <tr><th>Estimated total</th><th>What's required</th><th>Who runs it</th></tr>
+      <tr><td><strong>Under $10,000</strong></td><td>No quotes required. ICA (or contract review) + purchase requisition.</td><td>Your site</td></tr>
+      <tr><td><strong>$10,000 – $24,999</strong></td><td><strong>Three quotes</strong> should be solicited, unless otherwise directed by Purchasing. Attach the quote-request letter/email and all quotes to the PR.</td><td>Your site</td></tr>
+      <tr><td><strong>$25,000 – $99,999</strong></td><td><strong>Informal request for a letter proposal/quote</strong>, conducted and evaluated by the school/department, with a recommendation of award to Purchasing. Attach the request and all quotes to the PR.</td><td>Your site → Purchasing</td></tr>
+      <tr><td><strong>$100,000 +</strong></td><td><strong>Board approval required.</strong> Consult Purchasing on whether a formal RFP is needed. Plan ahead - solicitation, negotiation, and approval take time. Note the Board approval date in the PR notes.</td><td>Purchasing + Board</td></tr>
+    </table>
+    <div class="noteflag">Exceptions: an approved sole source (<a href="https://wcsdpolicy.net/pdf_files/forms/AF%203340%20Single-Sole%20Source%20Request_v9_10.20.24.pdf" target="_blank">AF 3340</a>, approved by Purchasing) or a waiver of solicitation granted by the Financial Review Committee (FRC).</div>
+  </div>
+
+  <div class="ref-card">
+    <h3>Professional services &amp; purchases - federal funds</h3>
+    <p class="sub">Federal money (Title I, IDEA, any federal grant) follows <a href="https://wcsdpolicy.net/search.php?search=Reg%203329" target="_blank">AR 3329 Procurement Protocols - Federal Funds</a> and 2 CFR 200 - on top of District rules.</p>
+    <table>
+      <tr><th>Estimated total</th><th>What's required</th></tr>
+      <tr><td><strong>Under $10,000</strong></td><td>No quotes required (micro-purchase level). Standard PO/contract process still applies.</td></tr>
+      <tr><td><strong>$10,000 – $249,999</strong></td><td><strong>Quotes must be obtained.</strong> Document everything and attach to the PR.</td></tr>
+      <tr><td><strong>$250,000 +</strong></td><td><strong>Formal, sealed solicitation</strong> conducted by the Purchasing Department and <strong>awarded by the Board of Trustees</strong>.</td></tr>
+    </table>
+    <div class="noteflag"><strong>Federal exemptions</strong> to the solicitation process - each must be documented: (1) approved sole source, with sole source documents approved by Purchasing; (2) insufficient competition exists, which Purchasing must approve; (3) the granting or pass-through agency grants a waiver - requested through the Grants Department on your behalf.</div>
+  </div>
+
+  <div class="ref-card">
+    <h3>Goods &amp; non-capital purchases - AM 3325 solicitation thresholds</h3>
+    <p class="sub">Source: <a href="https://wcsdpolicy.net/pdf_files/manuals/AM%203325_Purchasing%20Department%20Manual%20v3.pdf" target="_blank">AM 3325</a> §IV.A; NRS 332.063 / 332.065.</p>
+    <table>
+      <tr><th>Estimated total</th><th>What's required</th><th>Who runs it</th></tr>
+      <tr><td><strong>Under $5,000</strong></td><td>No solicitation. Purchase requisition → PO, or P-Card if the item is P-Card eligible.</td><td>Your site</td></tr>
+      <tr><td><strong>$5,000 – $50,000</strong></td><td><strong>Informal Quote Request (IFQ)</strong> - PUR-340. Quotes may be gathered by your site or by Purchasing.</td><td>Purchasing (with your quotes)</td></tr>
+      <tr><td><strong>$50,000.01 – $100,000</strong></td><td><strong>Formal Request for Quote (RFQ)</strong> to two or more capable vendors - NRS 332.063; PUR-341.</td><td>Purchasing</td></tr>
+      <tr><td><strong>Over $100,000</strong></td><td><strong>Formal Request for Bid (RFB)</strong>, awarded to lowest responsive and responsible bidder - NRS 332.065; PUR-342. <strong>Board approval required</strong> before a PO or contract is released (<a href="https://wcsdpolicy.net/search.php?search=BP%203321" target="_blank">BP 3321</a>).</td><td>Purchasing + Board</td></tr>
+    </table>
+  </div>
+
+  <div class="ref-card">
+    <h3>Purchase Order signature authority</h3>
+    <p class="sub">Source: AM 3325 §I.D. Only the Superintendent, the CFO, and the Director of Procurement &amp; Contracts may enter into financial agreements on behalf of the District.</p>
+    <table>
+      <tr><th>Amount</th><th>Signature / approval</th></tr>
+      <tr><td>$0 – $9,999.99</td><td>Buyer</td></tr>
+      <tr><td>$0 – $49,999.99</td><td>Director of Procurement &amp; Contracts</td></tr>
+      <tr><td>$50,000 – $99,999.99</td><td>Chief Financial Officer</td></tr>
+      <tr><td>$100,000 +</td><td>Superintendent <em>plus Board of Trustees approval</em></td></tr>
+      <tr><td>$25,000 + with another government agency</td><td>Board of Trustees approval (interlocal contract, NRS 277.180)</td></tr>
+    </table>
+  </div>
+
+  <div class="ref-card">
+    <h3>Exemptions from competitive solicitation (NRS 332.115) - non-federal</h3>
+    <p class="sub">These categories are <em>not required</em> to be competitively solicited - but Purchasing may still choose to solicit, and District policy can be stricter than the law. The PO process still applies. Federal funds follow the federal exemption rules above instead.</p>
+    <table>
+      <tr><td>Sole source items</td><td>Professional services</td><td>Equipment repairs/additions best done by a certain person</td></tr>
+      <tr><td>Equipment compatible with existing equipment/training</td><td>Perishable goods</td><td>Insurance</td></tr>
+      <tr><td>Computer hardware &amp; peripherals</td><td>Computer software</td><td>Books, library materials, subscriptions</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ============ P-CARD TAB ============ -->
+<section id="tab-pcard" class="tab">
+  <div class="ref-card">
+    <h3>P-Card: what it's for, and what it's never for</h3>
+    <p class="sub">Know your funding source before you swipe - general fund, grant, and SAF each have separate cards. Purchases must stay within card limits; splitting a purchase to fit is not allowed.</p>
+    <div class="two-col">
+      <div class="do">
+        <h4>✓ Acceptable</h4>
+        <ul>
+          <li>Instructional or work-related goods within budget and card limits</li>
+          <li>In person, mail, phone, fax, or secure website</li>
+          <li>Travel purchases (registration, airfare, hotel, rental car) - <strong>only after</strong> a signed Request for Leave (<a href="https://wcsdpolicy.net/pdf_files/hr-f530%20Leave%20Request%20Form%20v1.pdf" target="_blank">HR-F530</a>) is on file</li>
+          <li>School/department cards: complete the P-Card Log (<a href="https://wcsdpolicy.net/pdf_files/forms/AP-F014-Ex-PCard_Log-RevA.xlsx" target="_blank">AP-F014</a>) for every purchase</li>
+        </ul>
+      </div>
+      <div class="dont">
+        <h4>✗ Never allowed</h4>
+        <ul>
+          <li>Personal purchases (reimbursement + discipline)</li>
+          <li>Software or web-based programs</li>
+          <li>Any technology item that goes on the network</li>
+          <li>Equipment needing an asset tag (unit price $5,000+)</li>
+          <li>Services requiring an ICA (<a href="https://wcsdpolicy.net/pdf_files/forms/AP-F006A%20v19_%207.1.26%20final.pdf" target="_blank">AP-F006</a>)</li>
+          <li>Textbooks or any book orders</li>
+          <li>Meals during travel; premium travel services</li>
+          <li>Food/beverage (limited exceptions per AP-P006 or with prior written CFO approval)</li>
+          <li>Construction services of any kind</li>
+          <li>Items stocked in the District warehouse</li>
+          <li>Gift cards, staff/vendor appreciation items</li>
+          <li>Alcohol or alcohol-centered events</li>
+          <li>Cash advances; splitting/sharing charges</li>
+          <li>Anything that circumvents District contracts (check the Product Catalog)</li>
+        </ul>
+      </div>
+    </div>
+    <div class="noteflag" style="margin-top:18px">Credit limit ≠ budget. Approve transactions in Commerce Bank weekly. Credit limit increases above $5,000 require form <a href="https://wcsdpolicy.net/pdf_files/forms/FY25-26-P%20Card%20Increase%20Approval%20Form%20revised%20D%206-2-25.pdf" target="_blank">AP-F016</a>. Suspected unauthorized use must be reported to the Business Office and HR within 10 calendar days.</div>
+  </div>
+</section>
+
+<!-- ============ FORMS TAB ============ -->
+<section id="tab-forms" class="tab">
+  <div class="ref-card">
+    <h3>Forms library</h3>
+    <p class="sub">Direct links to the current forms on <a href="https://wcsdpolicy.net/searchforms.php" target="_blank">wcsdpolicy.net</a>. Tip: fillable PDFs may not open in a browser - right-click and "Save link as," then open in Adobe Reader.</p>
+    <table>
+      <tr><th>Form</th><th>Name</th><th>When you need it</th></tr>
+      <tr><td><a href="https://wcsdpolicy.net/pdf_files/forms/AF%203326%20Contract%20Review%20with%20Money_v15.pdf" target="_blank"><strong>AF 3326</strong></a></td><td>Contract Review - Exchange of Money</td><td>A vendor wants to use their own contract (or edit the District ICA) and money changes hands. Triggers formal contract review per <a href="https://wcsdpolicy.net/search.php?search=Reg%203322" target="_blank">AR 3322</a> / <a href="https://wcsdpolicy.net/search.php?search=BP%203321" target="_blank">BP 3321</a>.</td></tr>
+      <tr><td><a href="https://wcsdpolicy.net/pdf_files/forms/AF%203327%20Contract%20Review%20with%20NO%20Money_v13_11.01.24.pdf" target="_blank"><strong>AF 3327</strong></a></td><td>Contract Review - No Exchange of Money</td><td>Agreements, MOUs, or vendor documents where no money changes hands.</td></tr>
+      <tr><td><a href="https://wcsdpolicy.net/pdf_files/forms/AF%203340%20Single-Sole%20Source%20Request_v9_10.20.24.pdf" target="_blank"><strong>AF 3340</strong></a></td><td>Single/Sole Source Request</td><td>Only one vendor can provide the item (proprietary, patented, copyrighted). Requires 4 approvals <em>before</em> any PO or P-Card use: Department Lead/Principal → Chief Officer/Area Superintendent → Purchasing Buyer → Director of Procurement &amp; Contracts. Valid 12 months. Goods with no ICA also need the PUR-F210(A) disclosure form (Staff iNSIGHT).</td></tr>
+      <tr><td><a href="https://wcsdpolicy.net/pdf_files/forms/AF%203342%20New%20Teacher%20Increased%20Student%20Enrollment%20Equipment%20Form_v3_10.20.24.pdf" target="_blank"><strong>AF 3342</strong></a></td><td>New Teacher / Increased Enrollment Equipment Request</td><td>Equipment requests driven by new teachers or enrollment growth.</td></tr>
+      <tr><td><a href="https://wcsdpolicy.net/pdf_files/forms/AP-F006A%20v19_%207.1.26%20final.pdf" target="_blank"><strong>AP-F006A</strong></a></td><td>ICA Justification Packet</td><td>Justification for an Independent Contractor Agreement. School/department completes it - not the vendor.</td></tr>
+      <tr><td><a href="https://wcsdpolicy.net/pdf_files/forms/AP-F006B%20v17_final%20(7-1-26).pdf" target="_blank"><strong>AP-F006B</strong></a></td><td>Independent Contractor Agreement</td><td>The District's standard services contract. Required when ANY apply: onsite during work hours; contact with students or student records; cost exceeds $20,000. Submit through BusinessPlus with insurance certificate and W-9.</td></tr>
+      <tr><td><a href="https://wcsdpolicy.net/pdf_files/forms/AP%20F7007%203.13.25%20Rev.%20C.pdf" target="_blank"><strong>AP-F007</strong></a></td><td>ICA Revision Request</td><td>Changes to an ICA already in place.</td></tr>
+      <tr><td><a href="https://wcsdpolicy.net/pdf_files/forms/AP-F014-Ex-PCard_Log-RevA.xlsx" target="_blank"><strong>AP-F014</strong></a></td><td>P-Card Log (Excel)</td><td>Every purchase on a school/department card.</td></tr>
+      <tr><td><a href="https://wcsdpolicy.net/pdf_files/forms/FY25-26-P%20Card%20Increase%20Approval%20Form%20revised%20D%206-2-25.pdf" target="_blank"><strong>AP-F016</strong></a></td><td>P-Card Increase Approval</td><td>Credit limit requests above $5,000.</td></tr>
+      <tr><td><a href="https://wcsdpolicy.net/pdf_files/hr-f530%20Leave%20Request%20Form%20v1.pdf" target="_blank"><strong>HR-F530</strong></a></td><td>Request for Professional Leave / School Business</td><td>Signed before any travel-related P-Card purchase.</td></tr>
+      <tr><td><a href="https://wcsdpolicy.net/pdf_files/forms/AF%203127%20Budget%20Transfer%20Request%20form%20REV%20B.pdf" target="_blank"><strong>AF 3127</strong></a></td><td>Cost / Budget Transfer Request</td><td>Correcting posted costs, paying internal departments, or moving budget for a future expense.</td></tr>
+    </table>
+  </div>
+  <div class="ref-card">
+    <h3>Key references</h3>
+    <table>
+      <tr><th>Document</th><th>What it covers</th></tr>
+      <tr><td><a href="https://wcsdpolicy.net/pdf_files/manuals/AM%203325_Purchasing%20Department%20Manual%20v3.pdf" target="_blank">AM 3325 - Purchasing Department Manual</a></td><td>The full procurement manual.</td></tr>
+      <tr><td><a href="https://wcsdpolicy.net/search.php?search=BP%203321" target="_blank">Board Policy 3321 - Contract Review and Approval</a></td><td>Board approval requirements for contracts.</td></tr>
+      <tr><td><a href="https://wcsdpolicy.net/search.php?search=Reg%203322" target="_blank">AR 3322 - Contract Review and Approval</a></td><td>How vendor contracts get reviewed.</td></tr>
+      <tr><td><a href="https://wcsdpolicy.net/search.php?search=Reg%203323" target="_blank">AR 3323 - Professional Services</a></td><td>Solicitation rules for professional services.</td></tr>
+      <tr><td><a href="https://wcsdpolicy.net/search.php?search=Reg%203329" target="_blank">AR 3329 - Procurement Protocols (Federal Funds)</a></td><td>Federal-funds procurement rules (2 CFR 200).</td></tr>
+      <tr><td><a href="https://www.washoeschools.net/directory/business-financial-services/purchasing" target="_blank">Purchasing Department page</a></td><td>Product catalog, cheat sheets, RFP timeline estimator, contacts.</td></tr>
+      <tr><td><a href="https://solicitations.washoeschools.net/" target="_blank">WCSD Solicitations Dashboard</a></td><td>Open and awarded solicitations.</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ============ ABOUT TAB ============ -->
+<section id="tab-about" class="tab">
+  <div class="ref-card">
+    <h3>About this tool</h3>
+    <p class="sub">A mockup of a self-service procurement navigator for WCSD schools, departments, and sites.</p>
+    <p style="font-size:.93rem;margin-bottom:10px">Content is drawn from <strong>Administrative Manual 3325</strong> (Purchasing Department Manual, rev. 3.0), the <strong>Procurement of Professional Services</strong> training (CFO / Director of Procurement &amp; Contracts), and the <strong>Business Management &amp; Financial Controls</strong> training module. It is a navigation aid, not policy. The controlling documents are AM 3325, BP 3321, AR 3322, AR 3323, AR 3329, NRS Chapters 332 &amp; 338, and 2 CFR 200.</p>
+    <p style="font-size:.93rem;margin-bottom:10px"><strong>Note on thresholds:</strong> AM 3325 (2022) describes IFQs at $5,000+ for non-capital purchases; the 2023 professional-services training sets quote requirements for services at $10,000+ and federal quotes at $10,000+. This tool applies the services thresholds to services and the AM 3325 thresholds to goods. Where documents differ, Purchasing's current direction controls.</p>
+    <p style="font-size:.93rem"><strong>Purchasing Department</strong> · The Brown Center, 14101 Old Virginia Road, Reno NV 89521 · (775) 850-8025 · purchasing@washoeschools.net</p>
+  </div>
+</section>
+
+</main>
+
+<footer><div class="ft-inner">Washoe County School District - Purchase Pathfinder (mockup). Sources: AM 3325; Procurement of Professional Services training; Module 3 Business Management training; NRS 332/338; 2 CFR 200. Verify current policy at <a href="https://wcsdpolicy.net" style="color:#fff">wcsdpolicy.net</a>.</div></footer>
+
+<script>
+/* ---------- Form links ---------- */
+const FORMS = {
+  'AF 3326':'https://wcsdpolicy.net/pdf_files/forms/AF%203326%20Contract%20Review%20with%20Money_v15.pdf',
+  'AF 3327':'https://wcsdpolicy.net/pdf_files/forms/AF%203327%20Contract%20Review%20with%20NO%20Money_v13_11.01.24.pdf',
+  'AF 3340':'https://wcsdpolicy.net/pdf_files/forms/AF%203340%20Single-Sole%20Source%20Request_v9_10.20.24.pdf',
+  'AF 3342':'https://wcsdpolicy.net/pdf_files/forms/AF%203342%20New%20Teacher%20Increased%20Student%20Enrollment%20Equipment%20Form_v3_10.20.24.pdf',
+  'AP-F006A':'https://wcsdpolicy.net/pdf_files/forms/AP-F006A%20v19_%207.1.26%20final.pdf',
+  'AP-F006B':'https://wcsdpolicy.net/pdf_files/forms/AP-F006B%20v17_final%20(7-1-26).pdf',
+  'AP-F006A/B':'https://wcsdpolicy.net/pdf_files/forms/AP-F006A%20v19_%207.1.26%20final.pdf',
+  'AP-F007':'https://wcsdpolicy.net/pdf_files/forms/AP%20F7007%203.13.25%20Rev.%20C.pdf',
+  'AP-F014':'https://wcsdpolicy.net/pdf_files/forms/AP-F014-Ex-PCard_Log-RevA.xlsx',
+  'AP-F016':'https://wcsdpolicy.net/pdf_files/forms/FY25-26-P%20Card%20Increase%20Approval%20Form%20revised%20D%206-2-25.pdf',
+  'HR-F530':'https://wcsdpolicy.net/pdf_files/hr-f530%20Leave%20Request%20Form%20v1.pdf',
+  'AF 3127':'https://wcsdpolicy.net/pdf_files/forms/AF%203127%20Budget%20Transfer%20Request%20form%20REV%20B.pdf',
+  'AR 3329':'https://wcsdpolicy.net/search.php?search=Reg%203329',
+  'AR 3323':'https://wcsdpolicy.net/search.php?search=Reg%203323',
+  'AR 3322':'https://wcsdpolicy.net/search.php?search=Reg%203322',
+  'BP 3321':'https://wcsdpolicy.net/search.php?search=BP%203321',
+  'AM 3325':'https://wcsdpolicy.net/pdf_files/manuals/AM%203325_Purchasing%20Department%20Manual%20v3.pdf'
+};
+const DL_SVG='<svg class="icon-inline" style="width:11px;height:11px;margin:0 0 0 4px" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>';
+function tag(f){ return FORMS[f] ? '<a class="form-tag" href="'+FORMS[f]+'" target="_blank">'+f+DL_SVG+'</a>' : '<span class="form-tag">'+f+'</span>'; }
+
+/* ---------- Tabs ---------- */
+function showTab(id){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  document.querySelectorAll('.nav-inner button').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ---------- Wizard state ---------- */
+let answers = {};
+let history = [];
+
+const AMOUNTS = [
+  {v:'lt5k',    t:'Under $5,000',           d:'Single purchase or annual total with this vendor'},
+  {v:'5to10',   t:'$5,000 – $9,999',        d:'Quotes for goods start here; services not yet'},
+  {v:'10to25',  t:'$10,000 – $24,999',      d:'Quotes required for services and federal funds'},
+  {v:'25to50',  t:'$25,000 – $49,999',      d:'Letter proposals for services; interlocal Board trigger'},
+  {v:'50to100', t:'$50,000 – $99,999',      d:'Formal quote territory'},
+  {v:'100to250',t:'$100,000 – $249,999',    d:'Board approval required'},
+  {v:'gt250k',  t:'$250,000 or more',       d:'Federal: formal sealed solicitation + Board award'}
+];
+
+const QUESTIONS = {
+  type:{
+    num:1, title:'What do you need to buy?',
+    help:'Pick the closest match. The process is different for each.',
+    opts:[
+      {v:'goods',   t:'Goods, supplies, or equipment', d:'Physical items - classroom supplies, furniture, equipment'},
+      {v:'services',t:'Professional services', d:'A person or company performing work - consultants, presenters, maintenance'},
+      {v:'tech',    t:'Technology', d:'Hardware, software, apps, web-based programs, anything touching the network'},
+      {v:'construction', t:'Construction / public works', d:'Building, renovation, or facility work of any kind'},
+      {v:'warehouse',t:'Something the District warehouse stocks', d:'Commonly used furniture, equipment, and supplies'},
+      {v:'travel',  t:'Travel', d:'Conference registration, airfare, hotel, rental car'},
+      {v:'nomoney', t:'An agreement with no money involved', d:'MOU, partnership, or vendor document - no funds change hands'}
+    ]
+  },
+  techkind:{
+    num:2, title:'What kind of technology?',
+    help:'Software and networked devices follow a separate review path - and none of it can go on a P-Card.',
+    opts:[
+      {v:'software',t:'Software, app, or web-based program', d:'Anything with a login, license, or student data'},
+      {v:'network', t:'A device that connects to the network', d:'Computers, printers, interactive panels, anything with an IP'},
+      {v:'periph',  t:'Simple peripheral / accessory', d:'Cables, mice, keyboards - nothing on the network'}
+    ]
+  },
+  budget:{
+    num:2, title:'Is there funding in your budget for this?',
+    help:'Check your Budget-to-Actual report (DW3000E for schools, DW3000A for General Fund departments, DW3000B for grants) - and remember unposted P-Card charges.',
+    opts:[
+      {v:'yes',t:'Yes - funding exists in my budget', d:''},
+      {v:'no', t:'No - additional funding is needed', d:'Financial Review Committee (FRC) approval will be required'},
+      {v:'unsure',t:'Not sure', d:'The checklist will start with verifying your budget'}
+    ]
+  },
+  funding:{
+    num:3, title:'What funds are you spending?',
+    help:'Federal money carries extra requirements (AR 3329, 2 CFR 200). Grant and special-revenue budgets are more restrictive than the General Fund.',
+    opts:[
+      {v:'general',t:'General Fund / school operating budget', d:'Your regular site or department budget'},
+      {v:'federal',t:'Federal grant funds', d:'Title I, IDEA, or any federally sourced grant'},
+      {v:'other',  t:'Other grant, SAF, or donations', d:'State grants, student activity funds, special revenue'}
+    ]
+  },
+  amount:{
+    num:4, title:'What will it cost in total?',
+    help:'Use the one-time, single, AND annual aggregated total with this vendor - not just this order. Splitting purchases to stay under a threshold is not permitted.',
+    opts:AMOUNTS
+  },
+  ica:{
+    num:5, type:'multi', title:'Do any of these describe the service?',
+    help:'If ANY apply, an Independent Contractor Agreement (ICA) is required before work begins.',
+    checks:[
+      {v:'onsite', t:'The contractor will perform services at a school or department during work hours'},
+      {v:'students',t:'The contractor will encounter students or have access to student education records'},
+      {v:'over20k', t:'The cost of the services exceeds $20,000', amtOnly:'10to25'}
+    ]
+  },
+  sole:{
+    num:6, title:'Can more than one vendor provide this?',
+    help:'"Sole source" means the item can ONLY come from one vendor - proprietary, patented, or copyrighted. Preference for a vendor is not sole source.',
+    opts:[
+      {v:'no', t:'Yes - other vendors could provide it', d:'Normal competitive path'},
+      {v:'yes',t:'No - this vendor is the only source', d:'Sole source justification will be required (AF 3340)'}
+    ]
+  },
+  contract:{
+    num:7, title:'Whose paperwork will be used?',
+    help:'The District ICA / standard PO terms are preferred. A vendor\'s own contract - or any edits to the District ICA - triggers formal contract review.',
+    opts:[
+      {v:'district',t:'District forms only', d:'District ICA or standard Purchase Order terms, unmodified'},
+      {v:'vendor',  t:'Vendor wants their own contract (or edits ours)', d:'Requires Contract Review with Exchange of Money (AF 3326)'}
+    ]
+  },
+  gov:{
+    num:8, title:'Is the other party another government agency?',
+    help:'Contracts of $25,000+ with another public agency for work the District could do itself are interlocal contracts (NRS 277.180) and need Board approval.',
+    opts:[
+      {v:'no', t:'No - a private business or individual', d:''},
+      {v:'yes',t:'Yes - a city, county, state, or other public agency', d:''}
+    ]
+  }
+};
+
+function sequenceFor(a){
+  switch(a.type){
+    case 'warehouse': case 'travel': return ['type'];
+    case 'nomoney': return ['type','gov'];
+    case 'construction': return ['type','budget','funding','amount'];
+    case 'tech': return ['type','techkind','budget','funding','amount','sole'];
+    case 'services': return ['type','budget','funding','amount','ica','sole','contract','gov'];
+    default: return ['type','budget','funding','amount','sole'];
+  }
+}
+function currentSeq(){ return sequenceFor(answers); }
+
+function amtRank(a){ return ['lt5k','5to10','10to25','25to50','50to100','100to250','gt250k'].indexOf(a); }
+
+function render(){
+  const seq = currentSeq();
+  const idx = history.length;
+  const total = answers.type ? seq.length : 8;
+  document.getElementById('barFill').style.width = Math.min(100,(idx/total)*100)+'%';
+
+  if(idx >= seq.length && answers.type){ renderResult(); return; }
+  const qkey = seq[idx];
+  const q = QUESTIONS[qkey];
+
+  /* skip ICA question entirely when amount already forces ICA (> $24,999) */
+  if(qkey==='ica' && amtRank(answers.amount)>=3){ answers.ica=['over20k']; history.push('ica'); render(); return; }
+
+  document.getElementById('stepLabel').textContent = 'Question '+(idx+1)+(answers.type?' of '+seq.length:'');
+
+  let html = '<div class="qcard"><span class="qnum">Step '+(idx+1)+'</span><h3>'+q.title+'</h3><p class="qhelp">'+q.help+'</p>';
+  if(q.type==='multi'){
+    const checks = q.checks.filter(c=>!c.amtOnly || c.amtOnly===answers.amount);
+    html += '<div class="checks">'+checks.map(c=>'<label><input type="checkbox" value="'+c.v+'"> '+c.t+'</label>').join('')+'</div>';
+    html += '<button class="primary" onclick="answerMulti(\''+qkey+'\')">Continue →</button>';
+  } else {
+    html += '<div class="opts">'+q.opts.map(o=>'<button class="opt" onclick="answer(\''+qkey+'\',\''+o.v+'\')"><span class="ot">'+o.t+'</span><span class="od">'+(o.d||'')+'</span></button>').join('')+'</div>';
+  }
+  html += '<div class="backrow">'+(idx>0?'<button class="ghost" onclick="goBack()">← Back</button>':'<span></span>')+'<button class="ghost" onclick="restart()">Start over</button></div></div>';
+  document.getElementById('wizard').innerHTML = html;
+}
+
+function answer(key,val){ answers[key]=val; history.push(key); render(); }
+function answerMulti(key){
+  const vals=[...document.querySelectorAll('#wizard .checks input:checked')].map(i=>i.value);
+  answers[key]=vals; history.push(key); render();
+}
+function goBack(){ const k=history.pop(); delete answers[k]; render(); }
+function restart(){ answers={}; history=[]; render(); }
+
+/* ---------- Result engine ---------- */
+function renderResult(){
+  const a = answers;
+  document.getElementById('stepLabel').textContent = 'Your process';
+  document.getElementById('barFill').style.width = '100%';
+
+  let chips=[], verdict='', vTitle='', sections=[], flags=[];
+  const add=(sec,item,form)=>{ let s=sections.find(x=>x.n===sec); if(!s){s={n:sec,items:[]};sections.push(s);} s.items.push({t:item,f:form}); };
+
+  /* --- Short-circuit paths --- */
+  if(a.type==='warehouse'){
+    vTitle='Order it from the Central (Main) Warehouse.';
+    verdict='Warehouse-stocked items must come from the warehouse - buying them elsewhere (including on a P-Card) is not allowed.';
+    chips=['Warehouse order'];
+    add('Your to-do list','Check the warehouse catalog for the item and current stock');
+    add('Your to-do list','Place the warehouse order in BusinessPlus against your account number');
+    add('Your to-do list','Check the delivery for damage or discrepancies, then receive it in BusinessPlus');
+    finishResult(vTitle,verdict,chips,sections,flags); return;
+  }
+  if(a.type==='travel'){
+    vTitle='Travel runs on the P-Card - after the leave form is signed.';
+    verdict='Registration, airfare, hotel, and rental car may go on the P-Card once a signed Request for Leave (HR-F530) is on file. Meals and premium services (early-bird check-in, seat fees, in-flight Wi-Fi) are never P-Card eligible.';
+    chips=['HR-F530','P-Card'];
+    add('Before booking','Complete and get signature on the Request for Leave','HR-F530');
+    add('Before booking','Confirm the correct card for your funding source (general fund vs. grant vs. SAF)');
+    add('Booking','Purchase registration, airfare, hotel, and/or rental car on the P-Card - within card limits');
+    add('Booking','Record each purchase on the P-Card Log if using a school/department card','AP-F014');
+    add('After','Keep a copy of HR-F530 and submit it with monthly reporting / the transaction envelope');
+    add('After','Attach receipts in Commerce Bank; approver reviews weekly');
+    flags.push({k:'stop',t:'<strong>Never on the P-Card:</strong> meals during travel, early-bird check-in, seat assignment fees, in-flight Wi-Fi.'});
+    finishResult(vTitle,verdict,chips,sections,flags); return;
+  }
+  if(a.type==='nomoney'){
+    vTitle='No money changing hands still means document review.';
+    verdict='Any agreement, MOU, or vendor document without an exchange of funds goes through Contract Review - No Exchange of Money (AF 3327) per PUR-327. Only the Superintendent, CFO, or Director of Procurement & Contracts may sign.';
+    chips=['AF 3327','Contract review'];
+    add('Your to-do list','Complete the Contract Review - No Exchange of Money form and attach the agreement','AF 3327');
+    add('Your to-do list','Submit for review per AR 3322 / Board Policy 3321','AR 3322');
+    add('Your to-do list','Wait for the fully reviewed and signed document before any activity begins');
+    if(a.gov==='yes') flags.push({k:'note',t:'<strong>Interlocal agreement:</strong> agreements with other public agencies may require Board of Trustees approval (NRS 277.180). Purchasing will confirm.'});
+    flags.push({k:'stop',t:'<strong>Do not sign anything yourself.</strong> Only the Superintendent, CFO, and Director of Procurement &amp; Contracts can enter agreements for the District.'});
+    finishResult(vTitle,verdict,chips,sections,flags); return;
+  }
+  if(a.type==='construction'){
+    vTitle='Public works follow their own statute - start with Purchasing.';
+    verdict='Construction and facility projects are governed by NRS 338, not the normal goods/services process. Purchasing runs the solicitation (PUR-330/331/332). Construction can never go on a P-Card.';
+    chips=['NRS 338','Purchasing-led','No P-Card'];
+    if(a.budget==='no') add('Your to-do list','Funding doesn\'t exist yet - submit a Financial Review Committee (FRC) request before anything else');
+    add('Your to-do list','Contact the Purchasing Department before doing anything else - they will scope the right solicitation (formal quote, bid, or CMAR)');
+    add('Your to-do list','Confirm funding with the Capital Projects accounting team');
+    if(amtRank(a.amount)>=5) add('Your to-do list','Plan for Board of Trustees approval - contracts over $100,000 require it before award');
+    add('Your to-do list','No work begins until a fully executed contract and PO are in place');
+    flags.push({k:'note',t:'Awarded public works projects of $25,000+ are reported quarterly to the Board (PUR-313).'});
+    if(a.funding==='federal') flags.push({k:'note',t:'<strong>Federal funds:</strong> AR 3329 and 2 CFR 200 competitive solicitation requirements apply on top of NRS 338 (PUR-351) - including a formal sealed solicitation with Board award at $250,000+.'});
+    finishResult(vTitle,verdict,chips,sections,flags); return;
+  }
+
+  /* --- Main goods / services / tech engine --- */
+  const r = amtRank(a.amount);
+  const isService = a.type==='services';
+  const isSoftware = a.type==='tech' && a.techkind==='software';
+  const isNetworkTech = a.type==='tech' && a.techkind==='network';
+  const icaChecks = a.ica||[];
+  const icaRequired = isService && icaChecks.length>0;
+  const soleSource = a.sole==='yes';
+  const vendorContract = a.contract==='vendor';
+  const interlocal = a.gov==='yes';
+  const federal = a.funding==='federal';
+  const boardNeeded = r>=5 || (interlocal && r>=3) || (federal && r>=6);
+  const pcardOK = r===0 && !isService && !isSoftware && !isNetworkTech;
+
+  /* Solicitation level */
+  let solicit = 'none';
+  if(federal){
+    if(r>=6) solicit='fedsealed';
+    else if(r>=2) solicit='fedquotes';
+  } else if(isService){
+    if(r>=5) solicit='svc100k';
+    else if(r>=3) solicit='svcletter';
+    else if(r===2) solicit='svc3quotes';
+  } else { /* goods & tech per AM 3325 */
+    if(r>=5) solicit='rfb';
+    else if(r===4) solicit='rfq';
+    else if(r>=1) solicit='ifq';
+  }
+  if(soleSource) solicit='sole';
+
+  /* Chips */
+  chips.push(a.type==='goods'?'Goods':(isService?'Services':'Technology'));
+  if(federal) chips.push('Federal funds');
+  if(a.budget==='no') chips.push('FRC funding');
+  if(soleSource) chips.push('Sole source - AF 3340');
+  else {
+    const chipMap={fedsealed:'Sealed solicitation',fedquotes:'Quotes (federal)',svc100k:'RFP / Board',svcletter:'Letter proposal',svc3quotes:'Three quotes',rfb:'Formal RFB',rfq:'Formal RFQ',ifq:'IFQ (informal quotes)'};
+    if(chipMap[solicit]) chips.push(chipMap[solicit]);
+  }
+  if(r===0 && !soleSource) chips.push(pcardOK ? 'P-Card or PO' : 'Purchase requisition → PO');
+  if(icaRequired) chips.push('ICA required');
+  if(vendorContract) chips.push('Contract review - AF 3326');
+  if(boardNeeded) chips.push('Board approval');
+
+  /* Verdict */
+  if(soleSource){
+    vTitle='Sole source - justify it in writing before anything else.';
+    verdict='A sole source purchase skips competition only with an approved justification (AF 3340'+(federal?', and for federal funds the sole source documents must be approved by Purchasing under AR 3329':'')+'). Four approvals are required before any PO or P-Card use.';
+  } else if(federal && r>=6){
+    vTitle='Federal funds at $250,000+ - formal sealed solicitation.';
+    verdict='A formal, sealed solicitation conducted by the Purchasing Department and awarded by the Board of Trustees is required. Contact Purchasing and the Grants Department now - this takes months, not weeks.';
+  } else if(federal && r>=2){
+    vTitle='Federal funds at $10,000+ - quotes are mandatory.';
+    verdict='Per AR 3329 and 2 CFR 200, quotes must be obtained and documented for federal-funded purchases of $10,000 or more. Attach everything to the PR.';
+  } else if(isService && r>=5){
+    vTitle='Major services contract - Board approval and possibly an RFP.';
+    verdict='Contracts over $100,000 require Board approval, and major professional service contracts take time for solicitation, negotiation, and approval. Consult Purchasing on whether a formal RFP is required, and note the Board approval date in the PR.';
+  } else if(isService && r>=3){
+    vTitle='Letter proposal territory - your site runs the informal solicitation.';
+    verdict='For services between $25,000 and $99,999, the school/department conducts and evaluates an informal request for a letter proposal/quote, then makes a recommendation of award to Purchasing. Your request letter/email and all quotes get attached to the PR.';
+  } else if(isService && r===2){
+    vTitle='Three quotes, then proceed.';
+    verdict='For services between $10,000 and $24,999, three quotes should be solicited unless otherwise directed by Purchasing. Attach the request and all quotes to the PR.';
+  } else if(isService){
+    vTitle='No quotes needed - contract and requisition.';
+    verdict='Services under $10,000 (non-federal) don\'t require quotes. The contract (ICA or reviewed vendor contract, if required) and purchase requisition still do.';
+  } else if(pcardOK){
+    vTitle='Simple purchase - P-Card or purchase requisition.';
+    verdict='Under $5,000, no solicitation is needed. If the item is P-Card eligible, swipe away (within card limits). Otherwise enter a purchase requisition in BusinessPlus and wait for the PO.';
+  } else if(r===0){
+    vTitle='Purchase requisition - no solicitation needed at this amount.';
+    verdict='Under $5,000 requires no quotes, but this purchase can\'t go on a P-Card, so it runs through a BusinessPlus purchase requisition and PO.';
+  } else if(solicit==='ifq'){
+    vTitle='Informal Quote Request (IFQ) territory.';
+    verdict='At $5,000+, informal quotes are required for goods per PUR-340 (AM 3325). You can gather quotes yourself or ask Purchasing to obtain them.';
+  } else if(solicit==='rfq'){
+    vTitle='Formal Request for Quote - Purchasing runs this.';
+    verdict='Between $50,000 and $100,000, NRS 332.063 requires a formal RFQ submitted to two or more capable vendors. The Purchasing Department handles all formal RFQs.';
+  } else {
+    vTitle='Formal bid + Board approval - plan your timeline.';
+    verdict='Over $100,000, NRS 332.065 requires a formal Request for Bid awarded to the lowest responsive and responsible bidder, and the Board of Trustees must approve before any PO or contract is released. Build in weeks, not days.';
+  }
+
+  /* Sections */
+  if(a.budget==='no'){
+    add('Funding first','No existing budget - submit a Financial Review Committee (FRC) request for additional funding. FRC approves on an exception basis; major new services should be requested during the annual budget process');
+  } else {
+    add('Before you start','Confirm budget is available in the correct account - check your Budget-to-Actual report (DW3000E/A/B) and remember unposted P-Card charges');
+  }
+  if(federal){
+    add('Before you start','Review AR 3329 Procurement Protocols (Federal Funds) - federal rules under 2 CFR 200 apply on top of District rules','AR 3329');
+    add('Before you start','Run a due diligence / suspension &amp; debarment check on the vendor (SAM.gov) and document it, per federal procurement protocols');
+    add('Before you start','Confirm the expense is allowable under the grant - contact the Grants Department if unsure');
+  }
+  if(a.funding==='other') add('Before you start','Verify the expense is allowable for this funding source (grant terms, SAF rules, donor restrictions)');
+  if(isSoftware || isNetworkTech){
+    add('Before you start','Technology follows a separate review path - coordinate with IT before purchase. Software touching student data needs a data-privacy review; networked devices need IT approval to join the network');
+  }
+
+  if(soleSource){
+    add('Sole source justification','Complete the Single/Sole Source Request Form explaining why only this vendor\'s technical characteristics meet the need','AF 3340');
+    add('Sole source justification','Collect all four approvals - Department Lead/Principal → Chief Officer/Area Superintendent → Purchasing Buyer → Director of Procurement &amp; Contracts - <em>before</em> any PO or P-Card use. Approval is valid for 12 months');
+    if(!isService) add('Sole source justification','Products/goods with no ICA or contract: also complete the Requestor (Employee) Public Disclosure Form PUR-F210(A) - on the Staff iNSIGHT intranet - with your supervisor\'s signature, and email both forms to purchasing@washoeschools.net');
+    if(federal) add('Sole source justification','Federal funds: the approved sole source documents must be on file with Purchasing; alternatively an insufficient-competition finding (Purchasing approves) or a granting-agency waiver (requested via the Grants Department) can exempt the purchase');
+  } else if(solicit==='fedsealed'){
+    add('Solicitation','Contact Purchasing to open a formal, sealed solicitation - required for federal purchases of $250,000+');
+    add('Solicitation','Coordinate with the Grants Department on federal compliance documentation');
+    add('Solicitation','Plan for award by the Board of Trustees');
+  } else if(solicit==='fedquotes'){
+    add('Solicitation','Obtain quotes (federal funds, $10,000+) - document your quote request and every response','AR 3329');
+    add('Solicitation','Use the ready-made solicitation letter and scoring rubric on the <a href="#" onclick="showTab(\'informal\');return false">Informal Solicitation page</a>');
+    add('Solicitation','Attach the request letter/email and all quotes to the PR');
+  } else if(solicit==='svc3quotes'){
+    add('Solicitation','Solicit three quotes for the service (unless Purchasing directs otherwise)');
+    add('Solicitation','Use the ready-made solicitation letter and scoring rubric on the <a href="#" onclick="showTab(\'informal\');return false">Informal Solicitation page</a>');
+    add('Solicitation','Attach your quote-request letter/email and all quotes collected to the PR');
+  } else if(solicit==='svcletter'){
+    add('Solicitation','Conduct an informal request for a letter proposal/quote - your school/department runs and evaluates it');
+    add('Solicitation','Use the ready-made solicitation letter and scoring rubric on the <a href="#" onclick="showTab(\'informal\');return false">Informal Solicitation page</a> - publish criteria and weights in the letter, score with 3 independent scorers');
+    add('Solicitation','Make a recommendation of award to Purchasing');
+    add('Solicitation','Attach the request letter/email, all quotes, and the completed scoring rubric to the PR');
+  } else if(solicit==='svc100k'){
+    add('Solicitation','Consult Purchasing on whether a formal Request for Proposal (RFP) is required - start early, these take time');
+    add('Solicitation','Try the RFP Timeline Estimator on the Purchasing page to plan backwards from your need date');
+  } else if(solicit==='ifq'){
+    add('Solicitation','Gather informal quotes (or ask Purchasing to gather them) per PUR-340 - the templates on the <a href="#" onclick="showTab(\'informal\');return false">Informal Solicitation page</a> can help');
+    add('Solicitation','Send quotes to Purchasing with your requisition');
+  } else if(solicit==='rfq'){
+    add('Solicitation','Submit your requirement to Purchasing - they will issue a formal RFQ to two or more vendors (NRS 332.063)');
+  } else if(solicit==='rfb'){
+    add('Solicitation','Submit your requirement to Purchasing early - a formal RFB takes time (NRS 332.065)');
+    add('Solicitation','Try the RFP Timeline Estimator on the Purchasing page to plan backwards from your need date');
+  }
+  if((isSoftware||a.type==='tech') && !soleSource && !federal && r>=1){
+    add('Solicitation','Note: computer hardware and software are exempt from competitive solicitation under NRS 332.115 - Purchasing decides whether to solicit anyway. Confirm with your Buyer');
+  }
+
+  if(icaRequired){
+    add('Contract','Complete the ICA Justification Packet - the school/department fills it out, not the vendor','AP-F006A');
+    add('Contract','Complete Part A and the description of services + schedule in Part B of the ICA; get the vendor\'s signature on Part B','AP-F006B');
+    add('Contract','If the vendor provided a proposal, write "see attached proposal which is hereby incorporated into this Agreement" in Section 1 of Part B and attach it');
+    add('Contract','Collect the vendor\'s certificate of insurance, W-9, and Taxpayer ID - required before the PR can be submitted');
+    if(icaChecks.includes('students')) add('Contract','Student contact confirmed - make sure background/fingerprint requirements are addressed as part of ICA approval');
+  } else if(isService){
+    add('Contract','ICA exception applies (offsite + no student contact + ≤ $20,000) - a purchase requisition is sufficient. Keep documentation of why the exception applies');
+  }
+  if(vendorContract){
+    add('Contract','Vendor\'s own contract or ICA edits → submit Contract Review with Exchange of Money for formal review by Purchasing and OGC (AR 3322 / BP 3321)','AF 3326');
+    add('Contract','If the vendor contract only covers price and service (missing insurance, termination, governing-law language) and can\'t be negotiated, an ICA will ALSO be required');
+    add('Contract','Attach the approved contract and document review form to the PR once review is complete');
+  }
+
+  const prAttach=[];
+  if(icaRequired) prAttach.push('both sections of the ICA');
+  if(vendorContract) prAttach.push('the approved vendor contract + document review form');
+  if(icaRequired||vendorContract) prAttach.push('insurance certificates');
+  prAttach.push('W-9 if the vendor is new to the District');
+  if(solicit!=='none'&&!soleSource) prAttach.push('all quotes + the letter/email requesting them');
+  if(soleSource) prAttach.push('the approved sole source justification');
+  add('Purchase','Enter the purchase requisition in BusinessPlus with the complete account number'+(pcardOK?' - or use the P-Card within limits (log it on AP-F014 for site cards)':''));
+  add('Purchase','Attach to the PR: '+prAttach.join('; '));
+  if(boardNeeded){
+    if(r>=5) add('Purchase','Board of Trustees approval required before PO/contract release - purchases of $100,000+ (BP 3321). Note the Board approval date in the PR notes section','BP 3321');
+    if(interlocal && r>=3) add('Purchase','Interlocal contract with a government agency at $25,000+ also requires Board approval (NRS 277.180)');
+    if(federal && r>=6) add('Purchase','Federal $250,000+ solicitations are awarded by the Board of Trustees');
+  }
+  add('Purchase','Wait for the fully executed Purchase Order'+(icaRequired?' AND signed ICA':'')+(vendorContract?' and approved contract review':'')+' - no orders placed and no work begins before then');
+
+  add('After the purchase','Check goods/services on arrival; note damage or shortages on the packing slip and notify the vendor and Purchasing immediately');
+  add('After the purchase','Receive on the items in BusinessPlus - this is what triggers invoice payment');
+  add('After the purchase','File packing slips and documentation at your site');
+
+  /* Flags */
+  flags.push({k:'stop',t:'<strong>No confirming orders.</strong> Placing an order before the PO is fully executed can make you personally responsible for payment and subject to discipline (AM 3325 §II.G).'});
+  if(isSoftware) flags.push({k:'stop',t:'<strong>Software and web-based programs can never go on a P-Card</strong> - no matter the price.'});
+  if(isNetworkTech) flags.push({k:'stop',t:'<strong>Networked technology can never go on a P-Card</strong>, and equipment with a unit price of $5,000+ needs an asset tag.'});
+  if(isService) flags.push({k:'stop',t:'<strong>NO SERVICES SHOULD BEGIN</strong> until you receive a signed PO and a signed ICA and/or approved document review form and signed customized vendor contract. Starting early puts the District - and the person who allowed it - at risk.'});
+  if(r>=5) flags.push({k:'note',t:'<strong>Signature authority:</strong> at this amount the Superintendent signs, with Board approval. $50K–$100K: CFO. Under $50K: Director of Procurement &amp; Contracts.'});
+  flags.push({k:'note',t:'Records of solicitations are kept for 7 years (NRS 332.091). In a genuine emergency affecting health/safety/welfare, the Superintendent or Board can waive solicitation (NRS 332.112 / 338.011) - call Purchasing first.'});
+
+  finishResult(vTitle,verdict,chips,sections,flags);
+}
+
+function finishResult(vTitle,verdict,chips,sections,flags){
+  let html='<div class="qcard">';
+  html+='<span class="qnum">Your Path</span>';
+  html+='<div class="path">'+chips.map((c,i)=>'<span class="chip'+(i%2?' gold':'')+'">'+c+'</span>').join('<span class="arrow">→</span>')+'</div>';
+  html+='<div class="verdict"><h4>'+vTitle+'</h4><p>'+verdict+'</p></div>';
+  sections.forEach(s=>{
+    html+='<div class="cl-section"><h5>'+s.n+'</h5><ul class="cl">';
+    s.items.forEach(it=>{ html+='<li><input type="checkbox"><span>'+it.t+(it.f?tag(it.f):'')+'</span></li>'; });
+    html+='</ul></div>';
+  });
+  flags.forEach(f=>{ html+='<div class="'+(f.k==='stop'?'stopflag':'noteflag')+'">'+f.t+'</div>'; });
+  html+='<div class="backrow noprint"><button class="ghost" onclick="goBack()">← Back</button><span><button class="ghost" onclick="window.print()"><svg class="icon-inline" viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Print checklist</button> <button class="primary" onclick="restart()">Start a new purchase</button></span></div>';
+  html+='</div>';
+  document.getElementById('wizard').innerHTML=html;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+render();
+</script>
+</body>
+</html>
+                                                                                                                                                                                                                                                                                                                                                

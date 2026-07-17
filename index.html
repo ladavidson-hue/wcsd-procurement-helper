@@ -50,8 +50,9 @@
   .qcard h3{color:var(--wcsd-blue);font-size:1.2rem;margin-bottom:4px}
   .qhelp{color:var(--ink-soft);font-size:.92rem;margin-bottom:18px}
   .opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
-  .opt{background:var(--wcsd-blue-tint);border:2px solid transparent;border-radius:8px;padding:16px;cursor:pointer;text-align:left;font:inherit;transition:all .15s}
+  .opt{background:var(--wcsd-blue-tint);border:2px solid transparent;border-radius:8px;padding:14px;cursor:pointer;text-align:left;font:inherit;transition:all .15s;display:flex;gap:12px;align-items:flex-start}
   .opt:hover{border-color:var(--wcsd-blue);background:#fff}
+  .opt .tile{box-shadow:0 1px 2px rgba(0,42,69,.06)}
   .opt .ot{font-weight:700;color:var(--wcsd-blue-deep);display:block;margin-bottom:4px}
   .opt .od{font-size:.85rem;color:var(--ink-soft)}
   .backrow{margin-top:18px;display:flex;justify-content:space-between}
@@ -111,6 +112,20 @@
   .badge.gold{background:var(--wcsd-gold)}
   .badge.green{background:#2e8b57}
   .icon-inline{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-2px;margin-right:5px}
+
+  /* Tinted icon tiles */
+  .tile{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid rgba(0,42,69,.06)}
+  .tile svg{width:20px;height:20px;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .t-blue{background:#e8f1f7}.t-blue svg{stroke:#005288}
+  .t-gold{background:#fdf3d0}.t-gold svg{stroke:#96780a}
+  .t-mint{background:#e3f4ea}.t-mint svg{stroke:#2e8b57}
+  .t-lav{background:#edeafa}.t-lav svg{stroke:#6a52c7}
+  .t-rose{background:#fdecec}.t-rose svg{stroke:#c25450}
+  .t-slate{background:#edf1f4}.t-slate svg{stroke:#4a626f}
+  .opt-text{display:block;min-width:0}
+  .card-head{display:flex;gap:12px;align-items:center;margin-bottom:8px}
+  .card-head h3{margin-bottom:0}
+  .card-head .sub{margin-bottom:0}
   .dl-card h4{color:var(--wcsd-blue);margin:6px 0 4px;font-size:1rem}
   .dl-card p{font-size:.87rem;color:var(--ink-soft);margin-bottom:12px}
   .dl-btn{display:inline-block;background:var(--wcsd-blue);color:#fff;text-decoration:none;font-weight:700;font-size:.86rem;padding:9px 18px;border-radius:6px}
@@ -172,7 +187,7 @@
   </div>
 
   <div class="ref-card">
-    <h3>When do I need one?</h3>
+    <div class="card-head"><span class="tile t-blue"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></span><h3>When do I need one?</h3></div>
     <p class="sub">Amounts are one-time, single, and/or annual aggregated totals with a vendor. When in doubt, ask Purchasing - and always confirm current thresholds before you send anything.</p>
     <table>
       <tr><th>Situation</th><th>What's required</th></tr>
@@ -185,7 +200,7 @@
   </div>
 
   <div class="ref-card">
-    <h3>Download the templates</h3>
+    <div class="card-head"><span class="tile t-gold"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span><h3>Download the templates</h3></div>
     <p class="sub">Two companion documents: the letter you send to vendors, and the workbook your scorers use to pick the winner. Placeholders are marked in [brackets] - replace them all, and delete the instructions box before sending.</p>
     <div class="dl-grid">
       <div class="dl-card">
@@ -206,7 +221,7 @@
   </div>
 
   <div class="ref-card">
-    <h3>The process, step by step</h3>
+    <div class="card-head"><span class="tile t-mint"><svg viewBox="0 0 24 24"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg></span><h3>The process, step by step</h3></div>
     <ol class="steps">
       <li><strong>Confirm the basics.</strong> Budget exists (or FRC approval is in hand), the funding source is known, and the dollar amount actually calls for an informal solicitation - check the table above or run the <a href="#" onclick="showTab('navigator');return false">Purchase Pathfinder</a>.</li>
       <li><strong>Write the solicitation letter.</strong> Open the letter template and define the scope of work as numbered activities - every activity names a deliverable and an audience. Set proposal requirements, page limit, and the response deadline.</li>
@@ -221,7 +236,7 @@
   </div>
 
   <div class="ref-card">
-    <h3>Ground rules that keep you out of trouble</h3>
+    <div class="card-head"><span class="tile t-rose"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span><h3>Ground rules that keep you out of trouble</h3></div>
     <div class="two-col">
       <div class="do">
         <h4>✓ Do</h4>
@@ -250,7 +265,7 @@
 <!-- ============ THRESHOLDS TAB ============ -->
 <section id="tab-thresholds" class="tab">
   <div class="ref-card">
-    <h3>Professional services - non-federal funds</h3>
+    <div class="card-head"><span class="tile t-blue"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M3 13h18"/></svg></span><h3>Professional services - non-federal funds</h3></div>
     <p class="sub">Amounts are one-time, single, and/or <em>annual aggregated</em> totals with a vendor. Splitting purchases to stay under a threshold is not permitted. Source: Procurement of Professional Services training; <a href="https://wcsdpolicy.net/search.php?search=Reg%203323" target="_blank">AR 3323 Professional Services</a>.</p>
     <table>
       <tr><th>Estimated total</th><th>What's required</th><th>Who runs it</th></tr>
@@ -263,7 +278,7 @@
   </div>
 
   <div class="ref-card">
-    <h3>Professional services &amp; purchases - federal funds</h3>
+    <div class="card-head"><span class="tile t-lav"><svg viewBox="0 0 24 24"><path d="M3 22h18"/><path d="M6 18v-7"/><path d="M10 18v-7"/><path d="M14 18v-7"/><path d="M18 18v-7"/><path d="M12 2 3 7h18z"/></svg></span><h3>Professional services &amp; purchases - federal funds</h3></div>
     <p class="sub">Federal money (Title I, IDEA, any federal grant) follows <a href="https://wcsdpolicy.net/search.php?search=Reg%203329" target="_blank">AR 3329 Procurement Protocols - Federal Funds</a> and 2 CFR 200 - on top of District rules.</p>
     <table>
       <tr><th>Estimated total</th><th>What's required</th></tr>
@@ -275,7 +290,7 @@
   </div>
 
   <div class="ref-card">
-    <h3>Goods &amp; non-capital purchases - AM 3325 solicitation thresholds</h3>
+    <div class="card-head"><span class="tile t-mint"><svg viewBox="0 0 24 24"><path d="M21 8 12 3 3 8l9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg></span><h3>Goods &amp; non-capital purchases - AM 3325 solicitation thresholds</h3></div>
     <p class="sub">Source: <a href="https://wcsdpolicy.net/pdf_files/manuals/AM%203325_Purchasing%20Department%20Manual%20v3.pdf" target="_blank">AM 3325</a> §IV.A; NRS 332.063 / 332.065.</p>
     <table>
       <tr><th>Estimated total</th><th>What's required</th><th>Who runs it</th></tr>
@@ -287,7 +302,7 @@
   </div>
 
   <div class="ref-card">
-    <h3>Purchase Order signature authority</h3>
+    <div class="card-head"><span class="tile t-gold"><svg viewBox="0 0 24 24"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/></svg></span><h3>Purchase Order signature authority</h3></div>
     <p class="sub">Source: AM 3325 §I.D. Only the Superintendent, the CFO, and the Director of Procurement &amp; Contracts may enter into financial agreements on behalf of the District.</p>
     <table>
       <tr><th>Amount</th><th>Signature / approval</th></tr>
@@ -300,7 +315,7 @@
   </div>
 
   <div class="ref-card">
-    <h3>Exemptions from competitive solicitation (NRS 332.115) - non-federal</h3>
+    <div class="card-head"><span class="tile t-rose"><svg viewBox="0 0 24 24"><path d="M12 3v18"/><path d="M16 11l2-7 2 7a3 3 0 0 1-4 0z"/><path d="M4 11l2-7 2 7a3 3 0 0 1-4 0z"/><path d="M7 21h10"/><path d="M3 7h18"/></svg></span><h3>Exemptions from competitive solicitation (NRS 332.115) - non-federal</h3></div>
     <p class="sub">These categories are <em>not required</em> to be competitively solicited - but Purchasing may still choose to solicit, and District policy can be stricter than the law. The PO process still applies. Federal funds follow the federal exemption rules above instead.</p>
     <table>
       <tr><td>Sole source items</td><td>Professional services</td><td>Equipment repairs/additions best done by a certain person</td></tr>
@@ -313,7 +328,7 @@
 <!-- ============ P-CARD TAB ============ -->
 <section id="tab-pcard" class="tab">
   <div class="ref-card">
-    <h3>P-Card: what it's for, and what it's never for</h3>
+    <div class="card-head"><span class="tile t-gold"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></span><h3>P-Card: what it's for, and what it's never for</h3></div>
     <p class="sub">Know your funding source before you swipe - general fund, grant, and SAF each have separate cards. Purchases must stay within card limits; splitting a purchase to fit is not allowed.</p>
     <div class="two-col">
       <div class="do">
@@ -352,7 +367,7 @@
 <!-- ============ FORMS TAB ============ -->
 <section id="tab-forms" class="tab">
   <div class="ref-card">
-    <h3>Forms library</h3>
+    <div class="card-head"><span class="tile t-blue"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span><h3>Forms library</h3></div>
     <p class="sub">Direct links to the current forms on <a href="https://wcsdpolicy.net/searchforms.php" target="_blank">wcsdpolicy.net</a>. Tip: fillable PDFs may not open in a browser - right-click and "Save link as," then open in Adobe Reader.</p>
     <table>
       <tr><th>Form</th><th>Name</th><th>When you need it</th></tr>
@@ -370,7 +385,7 @@
     </table>
   </div>
   <div class="ref-card">
-    <h3>Key references</h3>
+    <div class="card-head"><span class="tile t-slate"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span><h3>Key references</h3></div>
     <table>
       <tr><th>Document</th><th>What it covers</th></tr>
       <tr><td><a href="https://wcsdpolicy.net/pdf_files/manuals/AM%203325_Purchasing%20Department%20Manual%20v3.pdf" target="_blank">AM 3325 - Purchasing Department Manual</a></td><td>The full procurement manual.</td></tr>
@@ -387,7 +402,7 @@
 <!-- ============ ABOUT TAB ============ -->
 <section id="tab-about" class="tab">
   <div class="ref-card">
-    <h3>About this tool</h3>
+    <div class="card-head"><span class="tile t-slate"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg></span><h3>About this tool</h3></div>
     <p class="sub">A mockup of a self-service procurement navigator for WCSD schools, departments, and sites.</p>
     <p style="font-size:.93rem;margin-bottom:10px">Content is drawn from <strong>Administrative Manual 3325</strong> (Purchasing Department Manual, rev. 3.0), the <strong>Procurement of Professional Services</strong> training (CFO / Director of Procurement &amp; Contracts), and the <strong>Business Management &amp; Financial Controls</strong> training module. It is a navigation aid, not policy. The controlling documents are AM 3325, BP 3321, AR 3322, AR 3323, AR 3329, NRS Chapters 332 &amp; 338, and 2 CFR 200.</p>
     <p style="font-size:.93rem;margin-bottom:10px"><strong>Note on thresholds:</strong> AM 3325 (2022) describes IFQs at $5,000+ for non-capital purchases; the 2023 professional-services training sets quote requirements for services at $10,000+ and federal quotes at $10,000+. This tool applies the services thresholds to services and the AM 3325 thresholds to goods. Where documents differ, Purchasing's current direction controls.</p>
@@ -422,6 +437,32 @@ const FORMS = {
   'AM 3325':'https://wcsdpolicy.net/pdf_files/manuals/AM%203325_Purchasing%20Department%20Manual%20v3.pdf'
 };
 const DL_SVG='<svg class="icon-inline" style="width:11px;height:11px;margin:0 0 0 4px" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>';
+
+/* ---------- Icon tiles (line-art) ---------- */
+const ICONS={
+  goods:{c:'t-mint',s:'<path d="M21 8 12 3 3 8l9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/>'},
+  services:{c:'t-blue',s:'<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M3 13h18"/>'},
+  tech:{c:'t-lav',s:'<rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/>'},
+  construction:{c:'t-gold',s:'<path d="M2 18h20v2a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/><path d="M10 10V5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v5"/><path d="M4 18v-3a8 8 0 0 1 5-7.4"/><path d="M20 18v-3a8 8 0 0 0-5-7.4"/>'},
+  warehouse:{c:'t-slate',s:'<path d="M22 20V8.35a2 2 0 0 0-1.26-1.86l-8-3.2a2 2 0 0 0-1.48 0l-8 3.2A2 2 0 0 0 2 8.35V20"/><path d="M2 20h20"/><path d="M6 20v-8h12v8"/><path d="M6 16h12"/>'},
+  travel:{c:'t-rose',s:'<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>'},
+  nomoney:{c:'t-blue',s:'<path d="M12 3v18"/><path d="M16 11l2-7 2 7a3 3 0 0 1-4 0z"/><path d="M4 11l2-7 2 7a3 3 0 0 1-4 0z"/><path d="M7 21h10"/><path d="M3 7h18"/>'},
+  software:{c:'t-lav',s:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/><path d="M6.5 6.5h.01"/><path d="M9.5 6.5h.01"/>'},
+  network:{c:'t-blue',s:'<path d="M12 20h.01"/><path d="M5 12.9a10 10 0 0 1 14 0"/><path d="M8.5 16.4a5 5 0 0 1 7 0"/><path d="M1.5 9.4a15 15 0 0 1 21 0"/>'},
+  periph:{c:'t-mint',s:'<rect x="8" y="3" width="8" height="18" rx="4"/><path d="M12 7v3"/>'},
+  byes:{c:'t-mint',s:'<circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/>'},
+  bno:{c:'t-rose',s:'<circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6"/><path d="M9 9l6 6"/>'},
+  bunsure:{c:'t-gold',s:'<circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/>'},
+  general:{c:'t-blue',s:'<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M12 6h.01"/><path d="M16 6h.01"/><path d="M8 10h.01"/><path d="M12 10h.01"/><path d="M16 10h.01"/>'},
+  landmark:{c:'t-lav',s:'<path d="M3 22h18"/><path d="M6 18v-7"/><path d="M10 18v-7"/><path d="M14 18v-7"/><path d="M18 18v-7"/><path d="M12 2 3 7h18z"/>'},
+  otherfund:{c:'t-gold',s:'<circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="M7 6h1v4"/>'},
+  many:{c:'t-mint',s:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>'},
+  one:{c:'t-rose',s:'<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>'},
+  district:{c:'t-blue',s:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/>'},
+  vendorc:{c:'t-gold',s:'<path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/>'},
+  privateco:{c:'t-slate',s:'<path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/>'}
+};
+function tileHTML(name){ const ic=ICONS[name]; return ic ? '<span class="tile '+ic.c+'"><svg viewBox="0 0 24 24">'+ic.s+'</svg></span>' : ''; }
 function tag(f){ return FORMS[f] ? '<a class="form-tag" href="'+FORMS[f]+'" target="_blank">'+f+DL_SVG+'</a>' : '<span class="form-tag">'+f+'</span>'; }
 
 /* ---------- Tabs ---------- */
@@ -451,40 +492,40 @@ const QUESTIONS = {
     num:1, title:'What do you need to buy?',
     help:'Pick the closest match. The process is different for each.',
     opts:[
-      {v:'goods',   t:'Goods, supplies, or equipment', d:'Physical items - classroom supplies, furniture, equipment'},
-      {v:'services',t:'Professional services', d:'A person or company performing work - consultants, presenters, maintenance'},
-      {v:'tech',    t:'Technology', d:'Hardware, software, apps, web-based programs, anything touching the network'},
-      {v:'construction', t:'Construction / public works', d:'Building, renovation, or facility work of any kind'},
-      {v:'warehouse',t:'Something the District warehouse stocks', d:'Commonly used furniture, equipment, and supplies'},
-      {v:'travel',  t:'Travel', d:'Conference registration, airfare, hotel, rental car'},
-      {v:'nomoney', t:'An agreement with no money involved', d:'MOU, partnership, or vendor document - no funds change hands'}
+      {v:'goods',   i:'goods', t:'Goods, supplies, or equipment', d:'Physical items - classroom supplies, furniture, equipment'},
+      {v:'services',i:'services', t:'Professional services', d:'A person or company performing work - consultants, presenters, maintenance'},
+      {v:'tech',    i:'tech', t:'Technology', d:'Hardware, software, apps, web-based programs, anything touching the network'},
+      {v:'construction', i:'construction', t:'Construction / public works', d:'Building, renovation, or facility work of any kind'},
+      {v:'warehouse',i:'warehouse', t:'Something the District warehouse stocks', d:'Commonly used furniture, equipment, and supplies'},
+      {v:'travel',  i:'travel', t:'Travel', d:'Conference registration, airfare, hotel, rental car'},
+      {v:'nomoney', i:'nomoney', t:'An agreement with no money involved', d:'MOU, partnership, or vendor document - no funds change hands'}
     ]
   },
   techkind:{
     num:2, title:'What kind of technology?',
     help:'Software and networked devices follow a separate review path - and none of it can go on a P-Card.',
     opts:[
-      {v:'software',t:'Software, app, or web-based program', d:'Anything with a login, license, or student data'},
-      {v:'network', t:'A device that connects to the network', d:'Computers, printers, interactive panels, anything with an IP'},
-      {v:'periph',  t:'Simple peripheral / accessory', d:'Cables, mice, keyboards - nothing on the network'}
+      {v:'software',i:'software', t:'Software, app, or web-based program', d:'Anything with a login, license, or student data'},
+      {v:'network', i:'network', t:'A device that connects to the network', d:'Computers, printers, interactive panels, anything with an IP'},
+      {v:'periph',  i:'periph', t:'Simple peripheral / accessory', d:'Cables, mice, keyboards - nothing on the network'}
     ]
   },
   budget:{
     num:2, title:'Is there funding in your budget for this?',
     help:'Check your Budget-to-Actual report (DW3000E for schools, DW3000A for General Fund departments, DW3000B for grants) - and remember unposted P-Card charges.',
     opts:[
-      {v:'yes',t:'Yes - funding exists in my budget', d:''},
-      {v:'no', t:'No - additional funding is needed', d:'Financial Review Committee (FRC) approval will be required'},
-      {v:'unsure',t:'Not sure', d:'The checklist will start with verifying your budget'}
+      {v:'yes',i:'byes', t:'Yes - funding exists in my budget', d:''},
+      {v:'no', i:'bno', t:'No - additional funding is needed', d:'Financial Review Committee (FRC) approval will be required'},
+      {v:'unsure',i:'bunsure', t:'Not sure', d:'The checklist will start with verifying your budget'}
     ]
   },
   funding:{
     num:3, title:'What funds are you spending?',
     help:'Federal money carries extra requirements (AR 3329, 2 CFR 200). Grant and special-revenue budgets are more restrictive than the General Fund.',
     opts:[
-      {v:'general',t:'General Fund / school operating budget', d:'Your regular site or department budget'},
-      {v:'federal',t:'Federal grant funds', d:'Title I, IDEA, or any federally sourced grant'},
-      {v:'other',  t:'Other grant, SAF, or donations', d:'State grants, student activity funds, special revenue'}
+      {v:'general',i:'general', t:'General Fund / school operating budget', d:'Your regular site or department budget'},
+      {v:'federal',i:'landmark', t:'Federal grant funds', d:'Title I, IDEA, or any federally sourced grant'},
+      {v:'other',  i:'otherfund', t:'Other grant, SAF, or donations', d:'State grants, student activity funds, special revenue'}
     ]
   },
   amount:{
@@ -505,24 +546,24 @@ const QUESTIONS = {
     num:6, title:'Can more than one vendor provide this?',
     help:'"Sole source" means the item can ONLY come from one vendor - proprietary, patented, or copyrighted. Preference for a vendor is not sole source.',
     opts:[
-      {v:'no', t:'Yes - other vendors could provide it', d:'Normal competitive path'},
-      {v:'yes',t:'No - this vendor is the only source', d:'Sole source justification will be required (AF 3340)'}
+      {v:'no', i:'many', t:'Yes - other vendors could provide it', d:'Normal competitive path'},
+      {v:'yes',i:'one', t:'No - this vendor is the only source', d:'Sole source justification will be required (AF 3340)'}
     ]
   },
   contract:{
     num:7, title:'Whose paperwork will be used?',
     help:'The District ICA / standard PO terms are preferred. A vendor\'s own contract - or any edits to the District ICA - triggers formal contract review. And if the contractor works on WCSD property or with students, the ICA is required no matter whose contract is used.',
     opts:[
-      {v:'district',t:'District forms only', d:'District ICA or standard Purchase Order terms, unmodified'},
-      {v:'vendor',  t:'Vendor wants their own contract (or edits ours)', d:'Requires Contract Review with Exchange of Money (AF 3326)'}
+      {v:'district',i:'district', t:'District forms only', d:'District ICA or standard Purchase Order terms, unmodified'},
+      {v:'vendor',  i:'vendorc', t:'Vendor wants their own contract (or edits ours)', d:'Requires Contract Review with Exchange of Money (AF 3326)'}
     ]
   },
   gov:{
     num:8, title:'Is the other party another government agency?',
     help:'Contracts of $25,000+ with another public agency for work the District could do itself are interlocal contracts (NRS 277.180) and need Board approval.',
     opts:[
-      {v:'no', t:'No - a private business or individual', d:''},
-      {v:'yes',t:'Yes - a city, county, state, or other public agency', d:''}
+      {v:'no', i:'privateco', t:'No - a private business or individual', d:''},
+      {v:'yes',i:'landmark', t:'Yes - a city, county, state, or other public agency', d:''}
     ]
   }
 };
@@ -562,7 +603,7 @@ function render(){
     html += '<div class="checks">'+checks.map(c=>'<label><input type="checkbox" value="'+c.v+'"> '+c.t+'</label>').join('')+'</div>';
     html += '<button class="primary" onclick="answerMulti(\''+qkey+'\')">Continue →</button>';
   } else {
-    html += '<div class="opts">'+q.opts.map(o=>'<button class="opt" onclick="answer(\''+qkey+'\',\''+o.v+'\')"><span class="ot">'+o.t+'</span><span class="od">'+(o.d||'')+'</span></button>').join('')+'</div>';
+    html += '<div class="opts">'+q.opts.map(o=>'<button class="opt" onclick="answer(\''+qkey+'\',\''+o.v+'\')">'+tileHTML(o.i)+'<span class="opt-text"><span class="ot">'+o.t+'</span><span class="od">'+(o.d||'')+'</span></span></button>').join('')+'</div>';
   }
   html += '<div class="backrow">'+(idx>0?'<button class="ghost" onclick="goBack()">← Back</button>':'<span></span>')+'<button class="ghost" onclick="restart()">Start over</button></div></div>';
   document.getElementById('wizard').innerHTML = html;
